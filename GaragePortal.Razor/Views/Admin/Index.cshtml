@@ -1,0 +1,103 @@
+﻿@model List<GaragePortal.Razor.Models.CustomerDTO>
+@{
+    ViewData["Title"] = "Customer Management";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Customer Management</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+        Add New Customer
+    </button>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Customers (@Model.Count)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var customer in Model)
+                        {
+                            <tr>
+                                <td>@customer.ClientId</td>
+                                <td>@customer.ClientName</td>
+                                <td>@customer.ClientEmail</td>
+                                <td>
+                                    <a href="@Url.Action("CustomerDetails", "Admin", new { id = customer.ClientId })" 
+                                       class="btn btn-sm btn-outline-primary">View</a>
+                                    <form asp-controller="Admin" asp-action="DeleteCustomer" asp-route-id="@customer.ClientId" 
+                                          method="post" style="display:inline;" 
+                                          onsubmit="return confirm('Delete customer @customer.ClientName?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <h3>No Customers Found</h3>
+        <p>Start by adding your first customer.</p>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+            Add First Customer
+        </button>
+    </div>
+}
+
+<!-- Add Customer Modal -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-controller="Admin" asp-action="AddCustomer" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Customer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input name="ClientName" class="form-control" required placeholder="Enter customer's full name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input name="ClientEmail" type="email" class="form-control" required placeholder="customer@example.com" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input name="ClientPassword" type="password" class="form-control" required placeholder="Enter password" minlength="6" />
+                        <small class="text-muted">Password must be at least 6 characters long</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save Customer</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

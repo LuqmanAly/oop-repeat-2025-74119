@@ -1,0 +1,372 @@
+﻿@model List<GaragePortal.Razor.Models.ServiceDTO>
+
+@{
+    ViewData["Title"] = "My Assigned Services";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+        --danger-color: #e74c3c;
+        --light-bg: #f8f9fa;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+        background-color: var(--light-bg);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .service-dashboard {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .dashboard-header {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        border-left: 4px solid var(--secondary-color);
+    }
+
+    .dashboard-title {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .service-card {
+        border: none;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+    }
+
+        .service-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--hover-shadow);
+        }
+
+    .card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: none;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .card-header.pending {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .card-header.completed {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+    .service-title {
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .service-meta {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .service-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .service-meta-icon {
+        font-size: 1.1rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+        background-color: white;
+    }
+
+    .service-detail {
+        margin-bottom: 1rem;
+    }
+
+    .service-detail-label {
+        font-weight: 600;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .service-form {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 6px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+        padding: 0.5rem 0.75rem;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+
+    .btn-complete {
+        background-color: var(--success-color);
+        border: none;
+        padding: 0.5rem 1.25rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .btn-complete:hover {
+            background-color: #219653;
+        }
+
+    .empty-state {
+        background-color: white;
+        border-radius: 8px;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: var(--card-shadow);
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+
+    .empty-title {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-text {
+        color: #6c757d;
+    }
+
+    .cost-input {
+        background-color: #e9ecef;
+    }
+
+   
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    }
+</style>
+
+<div class="service-dashboard">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="fas fa-tools"></i> My Assigned Services
+        </h1>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <h3 class="empty-title">No Services Assigned</h3>
+            <p class="empty-text">You currently don't have any services assigned to you.</p>
+        </div>
+    }
+    else
+    {
+        <div class="accordion" id="servicesAccordion">
+            @foreach (var service in Model)
+            {
+                <div class="service-card">
+                    <div class="card-header @(service.RepairStatus == "Completed" ? "completed" : "pending")"
+                         id="heading-@service.RepairId" data-bs-toggle="collapse"
+                         data-bs-target="#collapse-@service.RepairId" aria-expanded="true"
+                         aria-controls="collapse-@service.RepairId">
+                        <h3 class="service-title">
+                            <i class="fas fa-car"></i> @service.LicensePlate
+                        </h3>
+                        <div class="service-meta">
+                            <div class="service-meta-item">
+                                <i class="fas fa-info-circle service-meta-icon"></i>
+                                <span>@service.RepairStatus</span>
+                            </div>
+                            <div class="service-meta-item">
+                                <i class="fas fa-calendar-alt service-meta-icon"></i>
+                                <span>@service.RepairDate.ToShortDateString()</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="collapse-@service.RepairId" class="collapse show"
+                         aria-labelledby="heading-@service.RepairId" data-parent="#servicesAccordion">
+                        <div class="card-body">
+                            @if (service.RepairStatus == "Completed")
+                            {
+                                <div class="service-detail">
+                                    <span class="service-detail-label">
+                                        <i class="fas fa-clipboard"></i> Work Description:
+                                    </span>
+                                    <p>@service.RepairDescription</p>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="service-detail">
+                                            <span class="service-detail-label">
+                                                <i class="fas fa-clock"></i> Hours Worked:
+                                            </span>
+                                            <p>@service.Hours</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="service-detail">
+                                            <span class="service-detail-label">
+                                                <i class="fas fa-calendar-check"></i> Completed On:
+                                            </span>
+                                            <p>@service.FinishDate?.ToShortDateString()</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="service-detail">
+                                            <span class="service-detail-label">
+                                                <i class="fas fa-euro-sign"></i> Total Cost:
+                                            </span>
+                                            <p>€@service.RepairCost</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mb-3">
+                                    <div class="service-detail">
+                                        <span class="service-detail-label">
+                                            <i class="fas fa-clipboard"></i> Work to be done:
+                                        </span>
+                                        <p>@service.EstimatedWorkDescription</p>
+                                    </div>
+                                </div>
+
+                                <form asp-controller="Mechanic" asp-action="CompleteService" method="post" class="service-form">
+                                    <input type="hidden" name="id" value="@service.RepairId" />
+
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-clipboard-list"></i> Work performed:
+                                        </label>
+                                        <textarea name="repairDescription" class="form-control" rows="4" required
+                                      placeholder="Describe the work you performed..."></textarea>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">
+                                                <i class="fas fa-clock"></i> Hours Worked:
+                                            </label>
+                                            <input type="number" name="hours" class="form-control" min="0.5" step="0.5"
+                                                   required placeholder="Enter hours (e.g., 1.5)">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">
+                                                <i class="fas fa-calculator"></i> Estimated Cost:
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">€</span>
+                                                <input type="text" class="form-control cost-input" id="estimatedCost-@service.RepairId"
+                                                       readonly value="Will calculate automatically">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-complete">
+                                            <i class="fas fa-check-circle"></i> Mark as Complete
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <script>
+                                    // Calculate estimated cost when hours change
+                                    document.querySelector(`form input[name="hours"]`).addEventListener('input', function() {
+                                        const hours = parseFloat(this.value) || 0;
+                                        const hourlyRate = 75;
+                                        const estimatedCost = hours * hourlyRate;
+                                        document.getElementById('estimatedCost-@service.RepairId').value =
+                                            estimatedCost.toFixed(2);
+                                    });
+                                </script>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize accordion functionality
+        document.querySelectorAll('.card-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const collapse = document.querySelector(this.getAttribute('data-bs-target'));
+                collapse.classList.toggle('show');
+            });
+        });
+
+        // Real-time cost calculation for all forms
+        document.querySelectorAll('input[name="hours"]').forEach(input => {
+            input.addEventListener('input', function() {
+                const form = this.closest('form');
+                const hours = parseFloat(this.value) || 0;
+                const hourlyRate = 75;
+                const estimatedCost = hours * hourlyRate;
+                form.querySelector('input[id^="estimatedCost"]').value = estimatedCost.toFixed(2);
+            });
+        });
+    </script>
+}

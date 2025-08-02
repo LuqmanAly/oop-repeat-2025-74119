@@ -1,0 +1,37 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="text-center">
+    <h1>Dashboard</h1>
+    <p class="lead">Welcome to your garage management dashboard</p>
+    
+    @if (ViewData["MySession"] != null)
+    {
+        <div class="alert alert-info">
+            <strong>User ID:</strong> @ViewData["MySession"]
+        </div>
+    }
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <p class="card-text">Access your most common tasks here.</p>
+                    <a href="#" class="btn btn-primary">View Services</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Activity</h5>
+                    <p class="card-text">Check your recent garage activities.</p>
+                    <a href="#" class="btn btn-outline-primary">View History</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
